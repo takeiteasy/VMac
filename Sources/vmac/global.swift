@@ -66,26 +66,13 @@ final public class Global {
     }
     
     func load() -> VMContent {
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
-        decoder.dateDecodingStrategy = .secondsSince1970
         do {
-            self._vmc = try decoder.decode(VMContent.self,
+            self._vmc = try JSONDecoder().decode(VMContent.self,
                                            from: try Data(contentsOf: URL(fileURLWithPath: self.path + "/manifest.json")))
         } catch {
             assertionFailure("ERROR: Failed to load manifest from: \(self.path)")
         }
-        return VMContent(id: self._vmc.id,
-                         hw_model: self._vmc.hw_model,
-                         m_id: self._vmc.m_id,
-                         cores: self._vmc.cores,
-                         ram: self._vmc.ram,
-                         disks: self._vmc.disks,
-                         eth: self._vmc.eth,
-                         video: self._vmc.video,
-                         recovery: self._vmc.recovery,
-                         noAudio: self._vmc.noAudio,
-                         noGUI: self._vmc.noGUI)
+        return self._vmc
     }
     
     func save() {

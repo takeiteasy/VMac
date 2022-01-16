@@ -28,19 +28,7 @@ struct vmac: ParsableCommand {
                                 in: arg),
                let size = Range(match.range(withName: "size"),
                                 in:arg) {
-                let n: Int64 = Int64(arg[size]) ?? -1
-                switch arg[type].lowercased() {
-                case "gb":
-                    ret = n * 1024 * 1024 * 1024
-                case "mb":
-                    ret = n * 1024 * 1024
-                case "kb":
-                    ret = n * 1024
-                case "b":
-                    ret = n
-                default:
-                    assertionFailure("ERROR: Unknown error with regex engine. Please report this.")
-                }
+                ret = toBytes(n: Int64(arg[size]) ?? -1, suffix: arg[type].lowercased())
             }
         } else {
             assertionFailure("ERROR: Invalid argument supplied to --ram \"\(arg)\"")
@@ -62,7 +50,7 @@ struct vmac: ParsableCommand {
     var cores: Int = 2
     
     @Option(name: .shortAndLong,
-            help: "Add storage (e.g. 32gb,8192mb+ro,4194304kb+rw) (Max: \(disk_space_remaining() / 1024 / 1024 / 1024)gb)",
+            help: "Add storage (e.g. 32gb,8192mb+ro,4194304kb+rw) (Max: \(diskSpaceRemaining() / 1024 / 1024 / 1024)gb)",
             transform: { arg in
         let regex: NSRegularExpression = try! NSRegularExpression(pattern: #"((?<size>\d+)(?<unit>[gmk]?b))?(\+(?<access>r[ow]))?$"#,
                                                                   options: .caseInsensitive)
@@ -84,29 +72,17 @@ struct vmac: ParsableCommand {
                       assertionFailure("ERROR: Invalid argument supplied to --disk \"\(str)\" - Format is: N[gb|mb|kb|b](+[ro|rw]),...")
                       return
                   }
-            var n: Int64 = Int64(str[size]) ?? -1
-            switch str[unit].lowercased() {
-            case "gb":
-                break
-            case "mb":
-                n = n / 1024
-            case "kb":
-                n = n / 1024 / 1024
-            case "b":
-                n = n / 1024 / 1024 / 1024
-            default:
-                break
-            }
             var readOnly = false
             if let write = Range(match.range(withName: "access"),
                                  in: str) {
                 readOnly = str[write] == "ro"
             }
+            var n = toBytes(n: Int64(str[size]) ?? -1, suffix: str[unit].lowercased())
             assert(n > 0, "ERROR: Invalid argument supplied to --disk \"\(str)\" - Disk must be at least 1gb")
-            let disk_space = disk_space_remaining()
+            let disk_space = diskSpaceRemaining()
             total += n
-            assert(total < (disk_space / 1024 / 1024 / 1024), "ERROR: Insufficent disk space: \(disk_space)")
-            ret.append(VMStorage(size: Int(n),
+            assert(total < disk_space, "ERROR: Insufficent disk space: \(disk_space)")
+            ret.append(VMStorage(size: n,
                                  readOnly: readOnly))
         }
         return ret
@@ -166,9 +142,9 @@ struct vmac: ParsableCommand {
         let regex: NSRegularExpression = try! NSRegularExpression(pattern: #"^(?<width>\d+)x(?<height>\d+)@(?<ppi>\d+)?$"#,
                                                                   options: .caseInsensitive)
         let match = regex.firstMatch(in: arg,
-                                           options: [],
-                                           range: NSRange(location: 0,
-                                                          length: arg.utf16.count))
+                                     options: [],
+                                     range: NSRange(location: 0,
+                                                    length: arg.utf16.count))
         if match == nil {
             assertionFailure("ERROR: Invalid argument supplied to --video \"\(arg)\"")
         }
@@ -224,7 +200,7 @@ struct vmac: ParsableCommand {
           help: "Run VM after installation")
     var runAfterInstall: Bool = false
     @Flag(name: .shortAndLong,
-          help: "Delete after run")
+          help: "One-use VM, delete after exit")
     var tmp: Bool = false {
         didSet {
             self.out = "/tmp/\(UUID().uuidString).macosvm"

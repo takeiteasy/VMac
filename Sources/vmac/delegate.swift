@@ -48,10 +48,10 @@ class VMDelegate: NSObject, NSApplicationDelegate, VZVirtualMachineDelegate, NSW
                         
                         assert(config.minimumSupportedCPUCount <= content.cores!, "ERROR: Imagine requires a minimum of \(config.minimumSupportedCPUCount) cores - Configured value: \(content.cores!)")
                         assert(config.minimumSupportedMemorySize <= content.ram!, "ERROR: Imagine requires a minimum of \(config.minimumSupportedMemorySize) bytes of RAM - Configured value: \(content.cores!)")
-                        
+                       
                         self.content = VMContent(id: content.id,
-                                                 hw_model: config.hardwareModel.dataRepresentation,
-                                                 m_id: VZMacMachineIdentifier().dataRepresentation,
+                                                 hwModel: config.hardwareModel.dataRepresentation.hexEncodedString(),
+                                                 machineId: VZMacMachineIdentifier().dataRepresentation.hexEncodedString(),
                                                  cores: content.cores,
                                                  ram: content.ram,
                                                  disks: [],
@@ -75,7 +75,7 @@ class VMDelegate: NSObject, NSApplicationDelegate, VZVirtualMachineDelegate, NSW
                                 if fm.fileExists(atPath: d.path!) {
                                     print(" ALREADY EXISTS")
                                 } else {
-                                    try create_new_disk(size: d.size, path: d.path!)
+                                    try createBlankDisk(size: d.size, path: d.path!)
                                     print(" SUCCESS")
                                 }
                             } catch {
@@ -111,7 +111,7 @@ class VMDelegate: NSObject, NSApplicationDelegate, VZVirtualMachineDelegate, NSW
                         dynamic let installer = VZMacOSInstaller(virtualMachine: self.vm!,
                                                                  restoringFromImageAt: image.url)
                         let x = installer.progress.observe(\Progress.fractionCompleted, options: .initial) { p, _ in
-                            print_progress_bar(units: 20, progress: p.fractionCompleted)
+                            printProgress(progress: p.fractionCompleted)
                         }
                         
                         installer.install { [weak self] result in
@@ -120,6 +120,7 @@ class VMDelegate: NSObject, NSApplicationDelegate, VZVirtualMachineDelegate, NSW
                                 case .success:
                                     x.invalidate()
                                     print(" SUCCESS")
+                                    print(Global.shared.content.description)
                                     if !runAfterInstall {
                                         NSApp.terminate(nil)
                                     } else {
@@ -231,7 +232,9 @@ class VMDelegate: NSObject, NSApplicationDelegate, VZVirtualMachineDelegate, NSW
         self.view!.virtualMachine = self.vm
         self.view!.capturesSystemKeys = true
         self.window!.contentView = self.view
+        self.window?.makeFirstResponder(self.view)
         print("SUCCESS")
+        print(Global.shared.content.description)
     }
     
     private func start_vm() {

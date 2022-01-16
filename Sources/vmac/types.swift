@@ -28,15 +28,14 @@ struct VMEthInterface: Codable {
     public var description: String {
         return
 """
-Type: \(self.type)
-Interface: \(self.iface)
+Type: \(self.type), Interface: \(self.iface)
 """
     }
 }
 
 struct VMStorage: Codable {
     var path: String?
-    var size: Int
+    var size: Int64
     var readOnly: Bool
     
     public mutating func setPath(path: String) {
@@ -46,9 +45,7 @@ struct VMStorage: Codable {
     public var description: String {
         return
 """
-Path: \(self.path ?? "N/A")
-Size: \(self.size)
-Read-only?: \(self.readOnly)
+Path: \(self.path ?? "N/A"), Size: \(self.size), Read-only?: \(self.readOnly)
 """
     }
 }
@@ -56,8 +53,8 @@ Read-only?: \(self.readOnly)
 struct VMContent: Codable {
     var id: UUID = UUID()
     
-    var hw_model: Data?
-    var m_id: Data?
+    var hwModel: String?
+    var machineId: String?
     
     var cores: Int?
     var ram: Int64?
@@ -73,8 +70,8 @@ struct VMContent: Codable {
         return
 """
 ID: \(self.id)
-HW Model: \(String(describing: self.hw_model))
-Machine ID: \(String(describing: self.m_id))
+HW Model: \(String(describing: self.hwModel))
+Machine ID: \(String(describing: self.machineId))
 Cores: \(self.cores ?? -1)
 RAM: \(self.ram ?? -1)
 Storage (\(self.disks?.count ?? -1)): [
@@ -106,8 +103,8 @@ Disable GUI?: \(self.noGUI)
         conf.memorySize = UInt64(self.ram!)
         
         let platform = VZMacPlatformConfiguration()
-        platform.hardwareModel = VZMacHardwareModel(dataRepresentation: self.hw_model!)!
-        platform.machineIdentifier = VZMacMachineIdentifier(dataRepresentation: self.m_id!)!
+        platform.hardwareModel = VZMacHardwareModel(dataRepresentation: self.hwModel!.hexDecodedData())!
+        platform.machineIdentifier = VZMacMachineIdentifier(dataRepresentation: self.machineId!.hexDecodedData())!
         let aux_path = path + "/aux.img"
         do {
             platform.auxiliaryStorage = try VZMacAuxiliaryStorage(
