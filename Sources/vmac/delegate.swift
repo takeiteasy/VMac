@@ -16,7 +16,6 @@ public func print(_ items: String..., filename: String = #file, function : Strin
     Swift.print(items.map { "\($0)" }.joined(separator: separator), terminator: terminator)
 }
 
-@available(macOS 12, *)
 class VMDelegate: NSObject, NSApplicationDelegate, VZVirtualMachineDelegate, NSWindowDelegate {
     private(set) var vm: VZVirtualMachine?
     private(set) var content: VMContent?

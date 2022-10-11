@@ -9,9 +9,8 @@ import Foundation
 import Cocoa
 import ArgumentParser
 
-@available(macOS 12, *)
 @main
-struct vmac: ParsableCommand {
+struct VMac: ParsableCommand {
     @Argument(help: "Path to the image")
     var path: String
     
@@ -208,7 +207,6 @@ struct vmac: ParsableCommand {
         }
     }
     
-    @available(macOS 12, *)
     func run() throws {
         let fm = FileManager.default
         let url = URL(fileURLWithPath: self.path)
