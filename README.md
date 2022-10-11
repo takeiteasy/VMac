@@ -1,5 +1,7 @@
 ## VMac
 
+Simple Virtual Machine solution to test out the Virtualization framework. I believe this only works with the *new* Silicon chips. Inspired by [MacVM](https://github.com/KhaosT/MacVM).
+
 ```USAGE: vmac [<options>] <path>
 
 ARGUMENTS:
