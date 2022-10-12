@@ -18,7 +18,6 @@ OPTIONS:
                           <width>x<height>@<ppi> (default: VMGraphics(width:
                           2560, height: 1600, ppi: 220))
   -o, --out <out>         Path to save VM when installing OS
-  -b, --recovery-mode     Set to boot into recovery mode (TODO)
   -a, --no-audio          Set to disable audio
   -x, --no-gui            Set to disable GUI
   -H, --headless          Sets --no-audio and --no-gui to true

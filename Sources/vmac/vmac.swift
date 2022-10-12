@@ -168,11 +168,6 @@ struct VMac: ParsableCommand {
             help: "Path to save VM when installing OS")
     var out: String?
     
-    @Flag(name: [.customShort("b"),
-                 .long],
-          help: "Set to boot into recovery mode (TODO)")
-    var recoveryMode: Bool = false
-    
     @Flag(name: [.customShort("a"),
                  .long],
           help: "Set to disable audio")
