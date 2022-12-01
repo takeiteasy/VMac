@@ -231,7 +231,6 @@ struct VMac: ParsableCommand {
                                                disks: self.disks,
                                                eth: self.eth ?? [],
                                                video: self.video,
-                                               recovery: self.recoveryMode,
                                                noAudio: self.noAudio,
                                                noGUI: self.noGUI),
                             runAfterInstall: self.runAfterInstall)

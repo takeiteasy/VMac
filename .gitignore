@@ -10,3 +10,6 @@ images/
 Package.resolved
 #*
 *~
+*.resolved
+*.ipsw
+*.macosvm

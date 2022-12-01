@@ -56,7 +56,6 @@ class VMDelegate: NSObject, NSApplicationDelegate, VZVirtualMachineDelegate, NSW
                                                  disks: [],
                                                  eth: content.eth,
                                                  video: content.video,
-                                                 recovery: content.recovery,
                                                  noAudio: content.noAudio,
                                                  noGUI: content.noGUI)
                         for (i, var d) in content.disks!.enumerated() {

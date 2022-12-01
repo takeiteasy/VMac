@@ -62,7 +62,6 @@ struct VMContent: Codable {
     var eth: [VMEthInterface]?
     var video: VMGraphics?
     
-    var recovery: Bool = false
     var noAudio: Bool = false
     var noGUI: Bool = false
     
@@ -81,7 +80,6 @@ Interfaces: (\(self.eth?.count ?? -1)) [
   \(self.eth?.reduce("", {$0 + $1.description}) ?? "")
 ]
 Video: \(self.video?.description ?? "")
-Recovery Boot?: \(self.recovery)
 Disable Audio?: \(self.noAudio)
 Disable GUI?: \(self.noGUI)
 """

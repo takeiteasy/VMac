@@ -116,4 +116,3 @@ extension String {
         return Data(bytes)
     }
 }
-
